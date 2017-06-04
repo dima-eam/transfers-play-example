@@ -1,8 +1,8 @@
 package models.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import models.Account;
-import models.User;
+import models.domain.Account;
+import models.domain.User;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;

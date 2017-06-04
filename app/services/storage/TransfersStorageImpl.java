@@ -1,7 +1,7 @@
 package services.storage;
 
-import models.Account;
-import models.User;
+import models.domain.Account;
+import models.domain.User;
 
 import javax.annotation.Nonnull;
 import javax.inject.Singleton;

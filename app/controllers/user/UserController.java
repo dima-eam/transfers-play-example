@@ -1,8 +1,8 @@
 package controllers.user;
 
 import controllers.helpers.JsonParsable;
-import models.Account;
-import models.User;
+import models.domain.Account;
+import models.domain.User;
 import models.api.CreateUserResponse;
 import play.libs.Json;
 import play.mvc.Controller;
