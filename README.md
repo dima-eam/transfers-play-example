@@ -1,0 +1,1 @@
+A simple REST application demonstrating the power of Play Framework in Java.
