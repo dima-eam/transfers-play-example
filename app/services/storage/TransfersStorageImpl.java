@@ -1,27 +1,26 @@
 package services.storage;
 
 import models.domain.Account;
-import models.domain.TransferDetails;
 import models.domain.User;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Singleton;
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Quick and dirty in-memory storage.
+ * Quick and dirty in-memory storage. Uses the simplest syncronization to provide update atomicity.
  * Should be evolved to H2.
  */
 @Singleton
 public class TransfersStorageImpl implements TransfersStorage {
 
-    private Map<String, User> userStorage = new ConcurrentHashMap<>();
-    private Map<String, Account> accountStorage = new ConcurrentHashMap<>();
-    private Map<String, String> emailToAccountStorage = new ConcurrentHashMap<>();
+    private final Map<String, User> userStorage = new ConcurrentHashMap<>();
+    private final Map<String, Account> accountStorage = new ConcurrentHashMap<>();
+    private final Map<String, String> emailToAccountStorage = new ConcurrentHashMap<>();
 
     @Override
     public void put(@Nonnull Account account, @Nonnull User user) {
@@ -36,24 +35,29 @@ public class TransfersStorageImpl implements TransfersStorage {
     }
 
     @Override
-    public Optional<User> getUserByEmail(@Nonnull String email) {
-        return Optional.ofNullable(userStorage.get(email));
+    public Optional<Account> getUserAccountByEmail(@Nonnull String email) {
+        Objects.requireNonNull(email, "email");
+
+        return Optional.ofNullable(userStorage.get(email))
+                .map(this::getAccountByUser);
     }
 
     @Override
-    public TransferDetails transfer(@Nonnull User payer, @Nonnull User payee, @Nonnull BigDecimal sum) {
-        return null;
+    public void updateAccounts(@Nonnull Account from, @Nonnull Account to) {
+        Objects.requireNonNull(from, "from");
+        Objects.requireNonNull(to, "to");
+
+        synchronized (this) {
+            accountStorage.replace(from.getNumber(), from);
+            accountStorage.replace(to.getNumber(), to);
+        }
     }
 
-    private BigDecimal deposit(@Nonnull String account, @Nonnull BigDecimal sum) {
-        return Optional.ofNullable(accountStorage.get(account))
-                .map(acc -> accountStorage.compute(account, (k, v) -> v.deposit(sum)).getBalance())
-                .orElseThrow(() -> new IllegalStateException("Account not found"));
+    @Nullable
+    private Account getAccountByUser(User user) {
+        return Optional.ofNullable(emailToAccountStorage.get(user.getEmail()))
+                .map(accountStorage::get)
+                .orElse(null);
     }
 
-    private BigDecimal withdraw(@Nonnull String account, @Nonnull BigDecimal sum) {
-        return Optional.ofNullable(accountStorage.get(account))
-                .map(acc -> accountStorage.compute(account, (k, v) -> v.withdraw(sum)).getBalance())
-                .orElseThrow(() -> new IllegalStateException("Account not found"));
-    }
 }

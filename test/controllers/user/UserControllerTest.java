@@ -14,6 +14,8 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 
+import java.math.BigDecimal;
+
 /**
  * Just a couple of tests of {@link UserController} behavior. No http using, only application context.
  */
@@ -26,7 +28,7 @@ public class UserControllerTest extends WithApplication {
         Http.RequestBuilder request = new Http.RequestBuilder()
                 .method(Helpers.POST)
                 .uri(controllers.user.routes.UserController.create().url())
-                .bodyJson(OBJECT_MAPPER.readTree(getClass().getResourceAsStream("createUserRequest.json")));
+                .bodyJson(OBJECT_MAPPER.readTree(getClass().getResourceAsStream("json/createUserRequest.json")));
 
         Result result = Helpers.route(request);
         Assert.assertEquals(Http.Status.OK, result.status());
@@ -40,6 +42,7 @@ public class UserControllerTest extends WithApplication {
 
         Account account = response.getAccount();
         Assert.assertNotNull(account);
+        Assert.assertEquals(0, BigDecimal.valueOf(10).compareTo(account.getBalance()));
     }
 
     @Test

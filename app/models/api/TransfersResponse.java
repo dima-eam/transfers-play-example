@@ -29,6 +29,12 @@ public class TransfersResponse {
         this.payeeBalance = Objects.requireNonNull(payeeBalance, "payeeBalance");
     }
 
+    /**
+     * Convenient factory method to convert details to response.
+     *
+     * @param details transfer details
+     * @return response
+     */
     public static TransfersResponse of(@Nonnull TransferDetails details) {
         return new TransfersResponse(details.getPayerBalance(), details.getPayeeBalance());
     }

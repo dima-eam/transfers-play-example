@@ -1,10 +1,9 @@
 package services;
 
+import models.domain.Account;
 import models.domain.TransferDetails;
-import models.domain.User;
 import services.storage.TransfersStorage;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.math.BigDecimal;
@@ -27,16 +26,27 @@ public class TransfersServiceImpl implements TransfersService {
     }
 
     @Override
-    public TransferDetails transfer(@Nonnull String payerEmail, @Nonnull String payeeEmail, @Nonnull BigDecimal sum) {
-        return transfersStorage.getUserByEmail(payerEmail)
-                .map(payer -> processPayer(payer, payeeEmail, sum)
-                ).orElseThrow(() -> new IllegalArgumentException("Payer not found"));
+    public TransferDetails transfer(String payerEmail, String payeeEmail, BigDecimal sum) {
+        return transfersStorage.getUserAccountByEmail(payerEmail)
+                .map(from -> processPayer(from, payeeEmail, sum)
+                ).orElseThrow(() -> new IllegalArgumentException("Payer account not found"));
     }
 
-    private TransferDetails processPayer(User payer, @Nonnull String payeeEmail, @Nonnull BigDecimal sum) {
-        return transfersStorage.getUserByEmail(payeeEmail)
-                .map(payee -> transfersStorage.transfer(payer, payee, sum))
-                .orElseThrow(() -> new IllegalArgumentException("Payee not found"));
+    private TransferDetails processPayer(Account from, String payeeEmail, BigDecimal sum) {
+        return transfersStorage.getUserAccountByEmail(payeeEmail)
+                .map(to -> transfer(from, to, sum))
+                .orElseThrow(() -> new IllegalArgumentException("Payee account not found"));
+    }
+
+    private TransferDetails transfer(Account from, Account to, BigDecimal sum) {
+        Account payerAcc = from.withdraw(sum);
+        if (payerAcc.getBalance().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Insufficient funds, try smaller sum");
+        }
+        Account payeeAcc = to.deposit(sum);
+        transfersStorage.updateAccounts(payerAcc, payeeAcc);
+
+        return new TransferDetails(payerAcc.getBalance(), payeeAcc.getBalance());
     }
 
 }

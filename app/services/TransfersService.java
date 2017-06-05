@@ -2,7 +2,6 @@ package services;
 
 import models.domain.TransferDetails;
 
-import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 
 /**
@@ -18,5 +17,5 @@ public interface TransfersService {
      * @param sum        transfer sum
      * @return details of transfer
      */
-    TransferDetails transfer(@Nonnull String payerEmail, @Nonnull String payeeEmail, @Nonnull BigDecimal sum);
+    TransferDetails transfer(String payerEmail, String payeeEmail, BigDecimal sum);
 }

@@ -1,0 +1,8 @@
+{
+  "user": {
+    "email": "user1@mail.com",
+    "firstName": "tester",
+    "lastName": "test"
+  },
+  "initialBalance": "10.0"
+}
