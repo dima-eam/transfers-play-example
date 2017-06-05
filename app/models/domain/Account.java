@@ -7,11 +7,20 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Simple account representation. Uses {@link UUID} as account number representation.
+ * No account number validation provided, sorry.
+ */
 public final class Account {
 
+    /**
+     * Account number.
+     */
     @Nonnull
     private final String number;
-
+    /**
+     * Account balance.
+     */
     @Nonnull
     private final BigDecimal balance;
 
@@ -33,8 +42,8 @@ public final class Account {
         return balance;
     }
 
-    public static Account generate() {
-        return new Account(UUID.randomUUID().toString(), BigDecimal.ZERO);
+    public static Account generate(BigDecimal initialBalance) {
+        return new Account(UUID.randomUUID().toString(), initialBalance);
     }
 
     public Account deposit(@Nonnull BigDecimal sum) {
@@ -42,17 +51,14 @@ public final class Account {
     }
 
     public Account withdraw(@Nonnull BigDecimal sum) {
-        BigDecimal newSum = this.balance.subtract(sum);
-        if (newSum.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Insufficient funds, try smaller sum");
-        }
-        return new Account(this.number, newSum);
+        return new Account(this.number, this.balance.subtract(sum));
     }
 
     @Override
     public String toString() {
         return "Account{" +
                 "number='" + number + '\'' +
+                "balance='" + balance + '\'' +
                 '}';
     }
 }

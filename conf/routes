@@ -1,8 +1,8 @@
-# Creates user with internal account
+# Creates user with internal initialBalance
 POST     /transfers/api/createUser                 controllers.user.UserController.create
 
-# Deposit user account by email
-POST     /transfers/api/depositByEmail   controllers.transfers.TransfersController.depositByEmail
+# Transfer from one user to another by emails
+POST     /transfers/api/transferByEmail   controllers.transfers.TransfersController.transferByEmail
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

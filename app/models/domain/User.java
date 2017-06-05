@@ -6,14 +6,23 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
- * Simple user entity.
+ * Simple user entity. No validation provided, sorry.
  */
 public class User {
 
+    /**
+     * User's email
+     */
     @Nonnull
     private final String email;
+    /**
+     * User's first name
+     */
     @Nonnull
     private final String firstName;
+    /**
+     * User's last name
+     */
     @Nonnull
     private final String lastName;
 

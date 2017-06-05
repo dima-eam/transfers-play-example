@@ -1,16 +1,16 @@
 package models.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import models.domain.Account;
 import models.domain.User;
 
 import javax.annotation.Nonnull;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
- * Response with user and account data.
+ * Request with the data to create user and account in system.
  */
-public class CreateUserResponse {
+public class CreateUserRequest {
 
     /**
      * User's data.
@@ -18,15 +18,15 @@ public class CreateUserResponse {
     @Nonnull
     private final User user;
     /**
-     * User's account.
+     * Account initial balance.
      */
     @Nonnull
-    private final Account account;
+    private final BigDecimal initialBalance;
 
-    public CreateUserResponse(@Nonnull @JsonProperty("user") User user,
-                              @Nonnull @JsonProperty("account") Account account) {
+    public CreateUserRequest(@Nonnull @JsonProperty("user") User user,
+                             @Nonnull @JsonProperty("initialBalance") BigDecimal initialBalance) {
         this.user = Objects.requireNonNull(user, "user");
-        this.account = Objects.requireNonNull(account, "account");
+        this.initialBalance = Objects.requireNonNull(initialBalance, "initialBalance");
     }
 
     @Nonnull
@@ -36,16 +36,16 @@ public class CreateUserResponse {
     }
 
     @Nonnull
-    @JsonProperty("account")
-    public Account getAccount() {
-        return account;
+    @JsonProperty("initialBalance")
+    public BigDecimal getInitialBalance() {
+        return initialBalance;
     }
 
     @Override
     public String toString() {
         return "CreateUserResponse{" +
                 "user=" + user +
-                ", account=" + account +
+                ", initialBalance=" + initialBalance +
                 '}';
     }
 }

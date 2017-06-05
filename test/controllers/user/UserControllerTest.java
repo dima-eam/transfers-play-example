@@ -1,8 +1,10 @@
+package controllers.user;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.user.routes;
+import models.api.CreateUserResponse;
+import models.api.ErrorResponse;
 import models.domain.Account;
 import models.domain.User;
-import models.api.CreateUserResponse;
 import org.junit.Assert;
 import org.junit.Test;
 import play.Application;
@@ -12,18 +14,19 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 
-import java.io.IOException;
-
+/**
+ * Just a couple of tests of {@link UserController} behavior. No http using, only application context.
+ */
 public class UserControllerTest extends WithApplication {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Test
-    public void shouldCreateUser() throws IOException {
+    public void shouldCreateUser() throws Exception {
         Http.RequestBuilder request = new Http.RequestBuilder()
                 .method(Helpers.POST)
                 .uri(controllers.user.routes.UserController.create().url())
-                .bodyJson(OBJECT_MAPPER.readTree(getClass().getResourceAsStream("createUser.json")));
+                .bodyJson(OBJECT_MAPPER.readTree(getClass().getResourceAsStream("createUserRequest.json")));
 
         Result result = Helpers.route(request);
         Assert.assertEquals(Http.Status.OK, result.status());
@@ -40,28 +43,7 @@ public class UserControllerTest extends WithApplication {
     }
 
     @Test
-    public void shouldDepositByEmail() throws IOException {
-        Http.RequestBuilder request = new Http.RequestBuilder()
-                .method(Helpers.POST)
-                .uri(controllers.transfers.routes.TransfersController.depositByEmail().url())
-                .bodyJson(OBJECT_MAPPER.readTree(getClass().getResourceAsStream("depositByEmail.json")));
-
-        Result result = Helpers.route(request);
-        Assert.assertEquals(Http.Status.OK, result.status());
-
-        CreateUserResponse response = OBJECT_MAPPER.readValue(Helpers.contentAsString(result), CreateUserResponse.class);
-
-        User user = response.getUser();
-        Assert.assertEquals(user.getEmail(), "test@mail.com");
-        Assert.assertEquals(user.getFirstName(), "tester");
-        Assert.assertEquals(user.getLastName(), "test");
-
-        Account account = response.getAccount();
-        Assert.assertNotNull(account);
-    }
-
-    @Test
-    public void shouldReturnBadRequest() throws IOException {
+    public void shouldReturnBadRequest() throws Exception {
         Http.RequestBuilder request = new Http.RequestBuilder()
                 .method(Helpers.POST)
                 .uri(routes.UserController.create().url())
@@ -69,6 +51,9 @@ public class UserControllerTest extends WithApplication {
 
         Result result = Helpers.route(request);
         Assert.assertEquals(Http.Status.BAD_REQUEST, result.status());
+
+        ErrorResponse errorResponse = OBJECT_MAPPER.readValue(Helpers.contentAsString(result), ErrorResponse.class);
+        Assert.assertEquals("JSON body expected", errorResponse.getMessage());
     }
 
     @Override

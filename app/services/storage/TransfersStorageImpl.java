@@ -1,6 +1,7 @@
 package services.storage;
 
 import models.domain.Account;
+import models.domain.TransferDetails;
 import models.domain.User;
 
 import javax.annotation.Nonnull;
@@ -40,28 +41,19 @@ public class TransfersStorageImpl implements TransfersStorage {
     }
 
     @Override
-    public BigDecimal depositByEmail(@Nonnull String email, @Nonnull BigDecimal sum) {
-        return Optional.ofNullable(emailToAccountStorage.get(email))
-                .map(acc -> deposit(acc, sum))
-                .orElseThrow(() -> new IllegalArgumentException("Account not found by email"));
-    }
-
-    @Override
-    public BigDecimal withdrawByEmail(@Nonnull String email, @Nonnull BigDecimal sum) {
-        return Optional.ofNullable(emailToAccountStorage.get(email))
-                .map(acc -> withdraw(acc, sum))
-                .orElseThrow(() -> new IllegalArgumentException("Account not found by email"));
+    public TransferDetails transfer(@Nonnull User payer, @Nonnull User payee, @Nonnull BigDecimal sum) {
+        return null;
     }
 
     private BigDecimal deposit(@Nonnull String account, @Nonnull BigDecimal sum) {
         return Optional.ofNullable(accountStorage.get(account))
-                .map(acc -> accountStorage.replace(account, acc.deposit(sum)).getBalance())
+                .map(acc -> accountStorage.compute(account, (k, v) -> v.deposit(sum)).getBalance())
                 .orElseThrow(() -> new IllegalStateException("Account not found"));
     }
 
     private BigDecimal withdraw(@Nonnull String account, @Nonnull BigDecimal sum) {
         return Optional.ofNullable(accountStorage.get(account))
-                .map(acc -> acc.withdraw(sum).getBalance())
+                .map(acc -> accountStorage.compute(account, (k, v) -> v.withdraw(sum)).getBalance())
                 .orElseThrow(() -> new IllegalStateException("Account not found"));
     }
 }

@@ -2,30 +2,40 @@ package services;
 
 import models.domain.Account;
 import models.domain.User;
-import services.storage.TransfersStorageImpl;
+import services.storage.TransfersStorage;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.math.BigDecimal;
 
+/**
+ * Implementation of user management service. Generates account and store account and user.
+ */
 @Singleton
 public class UserServiceImpl implements UserService {
 
-    private final TransfersStorageImpl transfersStorage;
+    /**
+     * {@link TransfersStorage} to store the data
+     */
+    private final TransfersStorage transfersStorage;
 
     @Inject
-    public UserServiceImpl(TransfersStorageImpl transfersStorage) {
+    public UserServiceImpl(TransfersStorage transfersStorage) {
         this.transfersStorage = transfersStorage;
     }
 
+    /**
+     * Creates user and account and stores the data.
+     *
+     * @param user           user's data
+     * @param initialBalance account initial balance
+     * @return account
+     */
     @Override
-    public Account create(User user) {
-        Account account = Account.generate();
+    public Account create(User user, BigDecimal initialBalance) {
+        Account account = Account.generate(initialBalance);
         transfersStorage.put(account, user);
         return account;
     }
 
-    @Override
-    public User getByEmail(String email) {
-        return new User(email, "found", "found");
-    }
 }

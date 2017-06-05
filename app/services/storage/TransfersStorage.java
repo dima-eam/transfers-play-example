@@ -2,6 +2,7 @@ package services.storage;
 
 import models.domain.Account;
 import models.domain.User;
+import models.domain.TransferDetails;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
@@ -13,7 +14,5 @@ public interface TransfersStorage {
 
     Optional<User> getUserByEmail(@Nonnull String email);
 
-    BigDecimal depositByEmail(@Nonnull String email, @Nonnull BigDecimal sum);
-
-    BigDecimal withdrawByEmail(@Nonnull String email, @Nonnull BigDecimal sum);
+    TransferDetails transfer(@Nonnull User payer, @Nonnull User payee, @Nonnull BigDecimal sum);
 }
